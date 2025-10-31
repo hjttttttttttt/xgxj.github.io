@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智伴小机 - 全场景AI陪伴机器人</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366f1', // 主色调：柔和紫蓝色
+            secondary: '#f472b6', // 情感疗愈强调色：暖粉色
+            accent: '#8b5cf6', // 强调色：深紫色
+            neutral: '#f3f4f6', // 中性色：浅灰
+            'neutral-dark': '#374151', // 深色文本
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'breathe': 'breathe 4s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            breathe: {
+              '0%, 100%': { transform: 'scale(1)' },
+              '50%': { transform: 'scale(1.05)' },
+            }
+          }
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .bg-blur {
+        backdrop-filter: blur(8px);
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .robot-shadow {
+        box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.1), 0 8px 10px -6px rgba(99, 102, 241, 0.1);
+      }
+      .healing-gradient {
+        background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter text-neutral-dark bg-white">
+  <!-- 导航栏 -->
+  <header id="navbar" class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/90 bg-blur shadow-sm">
+    <div class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+          <i class="fa fa-robot text-white text-xl"></i>
+        </div>
+        <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">智伴小机</span>
+      </div>
+      
+      <!-- 桌面导航 -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#features" class="font-medium hover:text-primary transition-colors">核心功能</a>
+        <a href="#healing" class="font-medium hover:text-secondary transition-colors">情感疗愈</a>
+        <a href="#scenes" class="font-medium hover:text-primary transition-colors">全场景陪伴</a>
+        <a href="#experience" class="font-medium hover:text-primary transition-colors">立即体验</a>
+      </nav>
+      
+      <!-- 移动端菜单按钮 -->
+      <button id="menu-toggle" class="md:hidden text-neutral-dark focus:outline-none">
+        <i class="fa fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <!-- 移动端导航菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t animate-fade-in-down">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+        <a href="#features" class="py-2 font-medium hover:text-primary transition-colors">核心功能</a>
+        <a href="#healing" class="py-2 font-medium hover:text-secondary transition-colors">情感疗愈</a>
+        <a href="#scenes" class="py-2 font-medium hover:text-primary transition-colors">全场景陪伴</a>
+        <a href="#experience" class="py-2 font-medium hover:text-primary transition-colors">立即体验</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- 英雄区域 -->
+    <section class="pt-28 pb-20 md:pt-36 md:pb-28 px-4 bg-gradient-to-b from-neutral to-white">
+      <div class="container mx-auto max-w-6xl">
+        <div class="flex flex-col md:flex-row items-center gap-12">
+          <div class="md:w-1/2 space-y-6">
+            <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow">
+              智伴小机，<br>
+              <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">全场景AI陪伴</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 leading-relaxed">
+              新增情感疗愈功能，做你的专属情绪树洞。无论是开心分享，还是烦恼倾诉，智伴小机始终在你身边。
+            </p>
+            <div class="flex flex-wrap gap-4 pt-4">
+              <a href="#experience" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-full font-medium shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-1">
+                立即体验
+              </a>
+              <a href="#healing" class="px-8 py-3 bg-white hover:bg-gray-50 text-secondary border-2 border-secondary rounded-full font-medium transition-all transform hover:-translate-y-1">
+                了解情感疗愈
+              </a>
+            </div>
+          </div>
+          <div class="md:w-1/2 relative">
+            <div class="relative z-10 animate-float">
+              <img src="https://picsum.photos/id/1005/600/500" alt="智伴小机AI机器人" class="rounded-2xl shadow-2xl robot-shadow">
+              <div class="absolute -bottom-4 -right-4 bg-white p-3 rounded-full shadow-lg animate-pulse-slow">
+                <i class="fa fa-comment text-primary text-xl"></i>
+              </div>
+            </div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-primary/30 to-accent/30 rounded-full blur-3xl -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心功能区 -->
+    <section id="features" class="py-20 px-4">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16 space-y-4">
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold">核心功能升级</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto text-lg">全新体验，更智能、更贴心的陪伴，满足你的多样需求</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- 功能卡片1 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+              <i class="fa fa-comments text-primary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">智能对话</h3>
+            <p class="text-gray-600">自然流畅的语音交互，理解你的意图，提供精准回应，如同与朋友聊天般轻松。</p>
+          </div>
+          
+          <!-- 功能卡片2 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-14 h-14 rounded-full bg-secondary/10 flex items-center justify-center mb-6">
+              <i class="fa fa-heart text-secondary text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">情感疗愈</h3>
+            <p class="text-gray-600">专属情绪树洞，倾听你的烦恼，提供共情回应，帮助你梳理情绪，找回内心平静。</p>
+          </div>
+          
+          <!-- 功能卡片3 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+            <div class="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center mb-6">
+              <i class="fa fa-image text-accent text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">图像生成</h3>
+            <p class="text-gray-600">输入描述，即刻生成精美图片。无论是创意灵感还是视觉表达，都能帮你实现。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 情感疗愈专区 -->
+    <section id="healing" class="py-20 px-4 healing-gradient">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16 space-y-4">
+          <span class="inline-block px-4 py-1 bg-secondary/20 text-secondary rounded-full text-sm font-medium mb-2">全新功能</span>
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold">情感疗愈专区</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto text-lg">专属AI疗愈机器人，做你的"情绪树洞"，陪你度过每一个情绪瞬间</p>
+        </div>
+        
+        <!-- 疗愈机器人入口 -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 mb-16 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-secondary/5 rounded-full -mr-32 -mt-32"></div>
+          
+          <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 relative z-10">
+            <div class="md:w-2/5">
+              <div class="relative">
+                <img src="https://picsum.photos/id/64/500/500" alt="疗愈机器人形象" class="rounded-xl shadow-lg animate-float">
+                <button class="absolute -bottom-5 -right-5 bg-secondary hover:bg-secondary/90 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-110 animate-breathe">
+                  <i class="fa fa-heart"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="md:w-3/5 space-y-6">
+              <h3 class="text-2xl font-bold">疗愈机器人 · 温暖陪伴</h3>
+              <p class="text-gray-600">
+                专属疗愈机器人拥有柔和治愈的形象，搭配舒缓的白噪音背景，让你在放松的氛围中敞开心扉。支持自定义形象和声音，找到最适合你的陪伴风格。
+              </p>
+              
+              <div class="flex flex-wrap gap-3">
+                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">云朵精灵</span>
+                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">温柔陪伴者</span>
+                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">夏目友人帐风格</span>
+                <span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm">线条治愈系</span>
+              </div>
+              
+              <a href="#experience" class="inline-flex items-center px-6 py-3 bg-secondary hover:bg-secondary/90 text-white rounded-full font-medium shadow-lg shadow-secondary/20 transition-all transform hover:-translate-y-1">
+                进入疗愈专区 <i class="fa fa-arrow-right ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 多场景情感疗愈模式 -->
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- 树洞倾听模式 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-5">
+              <i class="fa fa-ear text-secondary text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">"树洞倾听"模式</h3>
+            <p class="text-gray-600 mb-4">无条件接纳你的情绪，不打断、不评判，通过共情式回应引导你表达内心感受。</p>
+            <ul class="space-y-2 text-gray-600">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>支持语音倾诉，保留情绪语调</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>提供安静陪伴模式，播放白噪音</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 情绪梳理模式 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-5">
+              <i class="fa fa-sitemap text-secondary text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">"情绪梳理"模式</h3>
+            <p class="text-gray-600 mb-4">通过引导式提问帮你拆解混乱情绪，生成情绪梳理图，直观展示情绪来源。</p>
+            <ul class="space-y-2 text-gray-600">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>压力源-身体反应-情绪感受三维分析</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>提供可落地的小行动建议和打卡功能</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 积极疗愈模式 -->
+          <div class="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-5">
+              <i class="fa fa-sun-o text-secondary text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold mb-3">"积极疗愈"模式</h3>
+            <p class="text-gray-600 mb-4">运用积极心理学方法，引导你关注正向面，重建自信，找回情绪能量。</p>
+            <ul class="space-y-2 text-gray-600">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>生成"我的闪光点清单"记录成功经历</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-secondary mt-1 mr-2"></i>
+                <span>提供语音冥想、治愈小故事等定制内容</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- 隐私保障 -->
+        <div class="mt-16 bg-white rounded-xl p-6 md:p-8 shadow-lg">
+          <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fa fa-lock text-primary mr-3"></i> 疗愈隐私与安全保障
+          </h3>
+          <div class="grid md:grid-cols-3 gap-6 text-gray-600">
+            <div class="flex items-start">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                <i class="fa fa-shield text-primary"></i>
+              </div>
+              <div>
+                <h4 class="font-medium mb-1">聊天记录加密</h4>
+                <p class="text-sm">单独加密存储，仅用户本人可查看，支持一键删除</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                <i class="fa fa-exclamation-triangle text-primary"></i>
+              </div>
+              <div>
+                <h4 class="font-medium mb-1">边界提醒功能</h4>
+                <p class="text-sm">超出AI疗愈范围时，提供专业心理援助资源</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                <i class="fa fa-eye-slash text-primary"></i>
+              </div>
+              <div>
+                <h4 class="font-medium mb-1">隐私保护设置</h4>
+                <p class="text-sm">可开启不记忆负面细节，减少二次情绪伤害</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 全场景陪伴 -->
+    <section id="scenes" class="py-20 px-4">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16 space-y-4">
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold">全场景陪伴</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto text-lg">无论何时何地，智伴小机都能提供恰到好处的陪伴与帮助</p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div class="rounded-xl overflow-hidden shadow-lg group">
+            <div class="h-64 overflow-hidden">
+              <img src="https://picsum.photos/id/26/800/600" alt="工作学习场景" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            </div>
+            <div class="p-6 bg-white">
+              <h3 class="text-xl font-semibold mb-2">工作学习</h3>
+              <p class="text-gray-600">智能助手功能帮你整理思路、制定计划、解答疑问，提高效率的好帮手。</p>
+            </div>
+          </div>
+          
+          <div class="rounded-xl overflow-hidden shadow-lg group">
+            <div class="h-64 overflow-hidden">
+              <img src="https://picsum.photos/id/1060/800/600" alt="休闲娱乐场景" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            </div>
+            <div class="p-6 bg-white">
+              <h3 class="text-xl font-semibold mb-2">休闲娱乐</h3>
+              <p class="text-gray-600">陪你聊天解闷、讲笑话、推荐音乐电影，或是一起玩些轻松的小游戏。</p>
+            </div>
+          </div>
+          
+          <div class="rounded-xl overflow-hidden shadow-lg group">
+            <div class="h-64 overflow-hidden">
+              <img src="https://picsum.photos/id/1025/800/600" alt="情绪低落场景" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            </div>
+            <div class="p-6 bg-white">
+              <h3 class="text-xl font-semibold mb-2">情绪低落</h3>
+              <p class="text-gray-600">启动情感疗愈模式，倾听你的烦恼，给予理解与安慰，帮你找回好心情。</p>
+            </div>
+          </div>
+          
+          <div class="rounded-xl overflow-hidden shadow-lg group">
+            <div class="h-64 overflow-hidden">
+              <img src="https://picsum.photos/id/325/800/600" alt="创意灵感场景" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            </div>
+            <div class="p-6 bg-white">
+              <h3 class="text-xl font-semibold mb-2">创意灵感</h3>
+              <p class="text-gray-600">帮你头脑风暴、激发创意，还能根据描述生成图像，将想法可视化。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 体验区 -->
+    <section id="experience" class="py-20 px-4 bg-gradient-to-b from-white to-neutral">
+      <div class="container mx-auto max-w-6xl">
+        <div class="text-center mb-16 space-y-4">
+          <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold">立即体验</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto text-lg">与智伴小机开启互动，感受AI陪伴的温暖</p>
+        </div>
+        
+        <div class="grid md:grid-cols-5 gap-6">
+          <!-- 机器人形象与功能选择 -->
+          <div class="md:col-span-2 space-y-6">
+            <!-- 机器人形象 -->
+            <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+              <div class="relative w-48 h-48 mx-auto mb-4">
+                <img id="robot-image" src="https://picsum.photos/id/1005/300/300" alt="智伴小机形象" class="w-full h-full object-cover rounded-full shadow-md">
+                <div id="healing-indicator" class="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white hidden">
+                  <i class="fa fa-heart"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-semibold">智伴小机</h3>
+              <p class="text-gray-500 text-sm mt-1">随时为你提供帮助</p>
+              
+              <div class="mt-6 flex justify-center gap-3">
+                <button id="normal-mode" class="px-4 py-2 bg-primary text-white rounded-full text-sm font-medium">
+                  正常模式
+                </button>
+                <button id="healing-mode" class="px-4 py-2 bg-white text-secondary border border-secondary rounded-full text-sm font-medium">
+                  疗愈模式
+                </button>
+              </div>
+            </div>
+            
+            <!-- 图像生成工具 -->
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+              <h3 class="text-lg font-semibold mb-4">图像生成</h3>
+              <form id="image-generator" class="space-y-4">
+                <div>
+                  <label for="image-prompt" class="block text-sm font-medium text-gray-700 mb-1">描述你想要的图像</label>
+                  <input type="text" id="image-prompt" placeholder="例如：一片宁静的湖泊，夕阳西下" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label for="image-width" class="block text-sm font-medium text-gray-700 mb-1">宽度</label>
+                    <input type="number" id="image-width" value="512" min="256" max="1024" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                  </div>
+                  <div>
+                    <label for="image-height" class="block text-sm font-medium text-gray-700 mb-1">高度</label>
+                    <input type="number" id="image-height" value="512" min="256" max="1024" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                  </div>
+                </div>
+                
+                <button type="submit" class="w-full py-2 bg-accent hover:bg-accent/90 text-white rounded-lg font-medium transition-colors">
+                  <i class="fa fa-magic mr-2"></i> 生成图像
+                </button>
+              </form>
+              
+              <div id="image-result" class="mt-4 hidden">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">生成结果：</h4>
+                <div class="rounded-lg overflow-hidden bg-gray-100 p-1">
+                  <img id="generated-image" src="" alt="生成的图像" class="w-full h-auto">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 聊天界面 -->
+          <div class="md:col-span-3 bg-white rounded-xl shadow-lg flex flex-col h-[600px]">
+            <!-- 聊天头部 -->
+            <div class="p-4 border-b flex justify-between items-center">
+              <h3 class="font-semibold">聊天窗口</h3>
+              <div class="flex gap-2">
+                <button class="text-gray-500 hover:text-primary transition-colors">
+                  <i class="fa fa-microphone"></i>
+                </button>
+                <button class="text-gray-500 hover:text-primary transition-colors">
+                  <i class="fa fa-cog"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- 聊天内容 -->
+            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto scrollbar-hide space-y-4">
+              <!-- 机器人消息 -->
+              <div class="flex items-start gap-3">
+                <img src="https://picsum.photos/id/1005/100/100" alt="智伴小机" class="w-8 h-8 rounded-full object-cover">
+                <div class="bg-neutral rounded-lg rounded-tl-none px-4 py-2 max-w-[80%]">
+                  <p>你好！我是智伴小机，很高兴认识你。有什么我可以帮助你的吗？</p>
+                </div>
+              </div>
+              
+              <!-- 机器人消息 -->
+              <div class="flex items-start gap-3">
+                <img src="https://picsum.photos/id/1005/100/100" alt="智伴小机" class="w-8 h-8 rounded-full object-cover">
+                <div class="bg-neutral rounded-lg rounded-tl-none px-4 py-2 max-w-[80%]">
+                  <p>如果你有烦恼想倾诉，可以点击左侧的"疗愈模式"，我会认真倾听你的感受。</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 聊天输入 -->
+            <div class="p-4 border-t">
+              <form id="chat-form" class="flex gap-2">
+                <input type="text" id="chat-input" placeholder="输入消息..." class="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-primary focus:border-primary transition-colors">
+                <button type="submit" class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary/90 transition-colors">
+                  <i class="fa fa-paper-plane"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-gray-900 text-white py-12 px-4">
+    <div class="container mx-auto max-w-6xl">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div>
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+              <i class="fa fa-robot text-white text-xl"></i>
+            </div>
+            <span class="text-xl font-bold">智伴小机</span>
+          </div>
+          <p class="text-gray-400 mb-4">全场景AI陪伴机器人，做你最贴心的伙伴。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-weixin text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-weibo text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fa fa-github text-xl"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">功能</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">智能对话</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">情感疗愈</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">图像生成</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">场景陪伴</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">支持</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">帮助中心</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">使用教程</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">心理援助资源</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h4 class="text-lg font-semibold mb-4">法律</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">隐私政策</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">服务条款</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">数据安全</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500 text-sm">
+        <p>© 2023 智伴小机 AI 互动机器人. 保留所有权利.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // 导航栏滚动效果
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('py-2', 'shadow');
+        navbar.classList.remove('py-3', 'md:py-4');
+      } else {
+        navbar.classList.add('py-3', 'md:py-4');
+        navbar.classList.remove('py-2', 'shadow');
+      }
+    });
+    
+    // 移动端菜单切换
+    document.getElementById('menu-toggle').addEventListener('click', function() {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu.classList.toggle('hidden');
+    });
+    
+    // 模式切换功能
+    const normalModeBtn = document.getElementById('normal-mode');
+    const healingModeBtn = document.getElementById('healing-mode');
+    const robotImage = document.getElementById('robot-image');
+    const healingIndicator = document.getElementById('healing-indicator');
+    
+    normalModeBtn.addEventListener('click', function() {
+      normalModeBtn.classList.remove('bg-white', 'text-primary', 'border', 'border-primary');
+      normalModeBtn.classList.add('bg-primary', 'text-white');
+      
+      healingModeBtn.classList.remove('bg-secondary', 'text-white');
+      healingModeBtn.classList.add('bg-white', 'text-secondary', 'border', 'border-secondary');
+      
+      robotImage.src = "https://picsum.photos/id/1005/300/300";
+      healingIndicator.classList.add('hidden');
+      
+      // 发送一条模式切换消息
+      addMessage("智伴小机已切换到正常模式，有什么我可以帮助你的吗？", 'robot');
+    });
+    
+    healingModeBtn.addEventListener('click', function() {
+      healingModeBtn.classList.remove('bg-white', 'text-secondary', 'border', 'border-secondary');
+      healingModeBtn.classList.add('bg-secondary', 'text-white');
+      
+      normalModeBtn.classList.remove('bg-primary', 'text-white');
+      normalModeBtn.classList.add('bg-white', 'text-primary', 'border', 'border-primary');
+      
+      robotImage.src = "https://picsum.photos/id/64/300/300";
+      healingIndicator.classList.remove('hidden');
+      
+      // 发送一条模式切换消息
+      addMessage("我已切换到疗愈模式，如果你有任何烦恼，都可以和我说，我会认真倾听的。", 'robot');
+    });
+    
+    // 聊天功能
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const message = chatInput.value.trim();
+      
+      if (message) {
+        // 添加用户消息
+        addMessage(message, 'user');
+        chatInput.value = '';
+        
+        // 模拟机器人回复
+        setTimeout(() => {
+          let response;
+          
+          // 根据当前模式生成不同回复
+          if (healingModeBtn.classList.contains('bg-secondary')) {
+            // 疗愈模式回复
+            const healingResponses = [
+              "我能感受到你的情绪，能多和我说说吗？",
+              "听起来你现在感觉" + getRandomEmotion() + "，这种感觉一定很难受吧。",
+              "谢谢你愿意和我分享这些，我在这里听你说。",
+              "我理解你的感受，很多人遇到这种情况都会有类似的想法。"
+            ];
+            response = healingResponses[Math.floor(Math.random() * healingResponses.length)];
+          } else {
+            // 正常模式回复
+            const normalResponses = [
+              "原来是这样，我明白了。",
+              "这个问题很有意思，让我想想...",
+              "你提到的这点很重要，可以再详细说说吗？",
+              "我理解你的意思，你是想解决这个问题对吗？"
+            ];
+            response = normalResponses[Math.floor(Math.random() * normalResponses.length)];
+          }
+          
+          addMessage(response, 'robot');
+        }, 1000);
+      }
+    });
+    
+    // 添加消息到聊天窗口
+    function addMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('flex', 'items-start', 'gap-3');
+      
+      let imageSrc, messageClass;
+      
+      if (sender === 'robot') {
+        imageSrc = healingModeBtn.classList.contains('bg-secondary') 
+          ? "https://picsum.photos/id/64/100/100" 
+          : "https://picsum.photos/id/1005/100/100";
+        messageClass = "bg-neutral rounded-lg rounded-tl-none px-4 py-2 max-w-[80%]";
+      } else {
+        imageSrc = "https://picsum.photos/id/237/100/100";
+        messageClass = "bg-primary text-white rounded-lg rounded-tr-none px-4 py-2 max-w-[80%] ml-auto";
+        messageDiv.classList.add('justify-end');
+      }
+      
+      messageDiv.innerHTML = `
+        <img src="${imageSrc}" alt="${sender}" class="w-8 h-8 rounded-full object-cover">
+        <div class="${messageClass}">
+          <p>${text}</p>
+        </div>
+      `;
+      
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // 生成随机情绪词
+    function getRandomEmotion() {
+      const emotions = ['委屈', '难过', '压力大', '焦虑', '不安', '疲惫'];
+      return emotions[Math.floor(Math.random() * emotions.length)];
+    }
+    
+    // 图像生成功能
+    const imageGenerator = document.getElementById('image-generator');
+    const imagePrompt = document.getElementById('image-prompt');
+    const imageWidth = document.getElementById('image-width');
+    const imageHeight = document.getElementById('image-height');
+    const imageResult = document.getElementById('image-result');
+    const generatedImage = document.getElementById('generated-image');
+    
+    imageGenerator.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const prompt = imagePrompt.value.trim();
+      const width = imageWidth.value;
+      const height = imageHeight.value;
+      
+      if (prompt) {
+        // 编码提示词
+        const encodedPrompt = encodeURIComponent(prompt);
+        // 构建图片URL
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&seed=100&model=flux&noloop=true`;
+        
+        // 显示生成的图片
+        generatedImage.src = imageUrl;
+        imageResult.classList.remove('hidden');
+        
+        // 添加一条机器人消息
+        addMessage(`根据你的描述，我生成了这张图片，希望你喜欢！`, 'robot');
+      }
+    });
+    
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth'
+          });
+          
+          // 关闭移动菜单（如果打开）
+          document.getElementById('mobile-menu').classList.add('hidden');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
